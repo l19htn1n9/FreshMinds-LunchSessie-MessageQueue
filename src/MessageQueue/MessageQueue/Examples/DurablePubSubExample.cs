@@ -1,11 +1,11 @@
 ﻿namespace MessageQueue;
 
-public static class PubSubExample
+public static class DurablePubSubExample
 {
     public static async Task RunAsync()
     {
-        var consumer1 = new Consumer("consumer-1", "my-topic");
-        var consumer2 = new Consumer("consumer-2", "my-topic");
+        var consumer1 = new DurableConsumer("consumer-1", "my-topic");
+        var consumer2 = new DurableConsumer("consumer-2", "my-topic");
         consumer1.StartListening();
         consumer2.StartListening();
 
@@ -17,19 +17,14 @@ public static class PubSubExample
         await Task.Delay(100);
         Console.WriteLine("Press enter to send next message....");
         Console.ReadLine();
+        await consumer2.CloseAsync();
         await producer2.SendMessageAsync("test-message-2");
 
         await Task.Delay(100);
         Console.WriteLine("Press enter to send next message....");
         Console.ReadLine();
-        await consumer2.StopListeningAsync();
-        await producer2.SendMessageAsync("test-message-3");
         consumer2.StartListening();
-
-        await Task.Delay(100);
-        Console.WriteLine("Press enter to send next message....");
-        Console.ReadLine();
-        await producer2.SendMessageAsync("test-message-4");
+        await producer2.SendMessageAsync("test-message-3");
 
         await Task.Delay(100);
         Console.WriteLine("Press enter to stop example...");

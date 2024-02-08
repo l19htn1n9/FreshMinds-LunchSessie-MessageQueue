@@ -2,7 +2,7 @@
 
 namespace MessageQueue;
 
-public class Consumer
+public class RejectConsumer
 {
     private readonly string _name;
     private readonly string _address;
@@ -12,8 +12,7 @@ public class Consumer
     private IReceiverLink? receiver;
     private CancellationTokenSource? cancellationTokenSource;
     
-
-    public Consumer(string name, string address)
+    public RejectConsumer(string name, string address)
     {
         _name = name;
         _address = address;
@@ -58,8 +57,8 @@ public class Consumer
 
                 if (message != null)
                 {
-                    receiver.Accept(message);
-                    Console.WriteLine($"{GetType().Name}:{_name} received message: {message.Body} for address {_address}");
+                    receiver.Reject(message);
+                    Console.WriteLine($"{GetType().Name}:{_name} rejected message: {message.Body} for address {_address}");
                 }
             }
         }

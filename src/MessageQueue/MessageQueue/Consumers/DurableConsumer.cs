@@ -1,31 +1,42 @@
 ﻿using Amqp;
+using Amqp.Framing;
+using Amqp.Types;
 
 namespace MessageQueue;
 
-public class Consumer
+public class DurableConsumer
 {
     private readonly string _name;
     private readonly string _address;
-    private readonly Connection _connection;
-    private readonly ISession _session;
+    private readonly Source _source;
     private readonly Func<CancellationToken, Task> _backgroundAction;
-    private IReceiverLink? receiver;
+    private Connection? connection;
+    private Session? session;
+    private ReceiverLink? receiver;
     private CancellationTokenSource? cancellationTokenSource;
-    
 
-    public Consumer(string name, string address)
+    public DurableConsumer(string name, string address)
     {
         _name = name;
         _address = address;
-        _connection = new Connection(Settings.Address);
-        _session = new Session(_connection);
+        _source = new Source()
+        {
+            Address = _address,
+            Durable = 2,
+            ExpiryPolicy = new Symbol("never")
+        };
         _backgroundAction = DoWorkAsync;
     }
 
     public void StartListening()
     {
         cancellationTokenSource = new CancellationTokenSource();
-        receiver = _session.CreateReceiver(_name, _address);
+        connection = new Connection(Settings.Address, null, new Open()
+        {
+            ContainerId = $"{_name}-con"
+        }, null);
+        session = new Session(connection);
+        receiver = new ReceiverLink(session, _name, _source, null);
         _backgroundAction.Invoke(cancellationTokenSource.Token);
     }
 
@@ -39,13 +50,22 @@ public class Consumer
         if (receiver != null)
         {
             await receiver.CloseAsync();
+            receiver = null;
         }
     }
 
     public async Task CloseAsync()
     {
-        await _session.CloseAsync();
-        await _connection.CloseAsync();
+        if (session != null)
+        {
+            await session.CloseAsync();
+            session = null;
+        }
+        if (connection != null)
+        {
+            await connection.CloseAsync();
+            connection = null;
+        }
     }
 
     private async Task DoWorkAsync(CancellationToken cancellationToken)
