@@ -7,8 +7,8 @@ public static class QueueExample
         var consumer1 = new Consumer("consumer-1", "my-queue");
         var consumer2 = new Consumer("consumer-2", "my-queue");
 
-        var producer1 = new Producer("producer-1", "my-queue");
-        var producer2 = new Producer("producer-2", "my-queue");
+        var producer1 = new Producer("producer-1", "my-queue", false);
+        var producer2 = new Producer("producer-2", "my-queue", false);
 
         await producer1.SendMessageAsync("test-message-1");
 

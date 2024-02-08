@@ -9,11 +9,13 @@ public class Producer
     private readonly Connection _connection;
     private readonly ISession _session;
     private readonly ISenderLink _sender;
+    private readonly bool _durable;
 
-    public Producer(string name, string address)
+    public Producer(string name, string address, bool durable)
     {
         _name = name;
         _address = address;
+        _durable = durable;
         _connection = new Connection(Settings.Address);
         _session = new Session(_connection);
         _sender = _session.CreateSender(_name, _address);
@@ -25,7 +27,7 @@ public class Producer
         {
             Header = new()
             {
-                Durable = false,
+                Durable = _durable,
             },
         };
 

@@ -6,7 +6,7 @@ public class DeadLetterQueueExample
     {
         var consumer = new RejectConsumer("consumer-1", "my-queue");
 
-        var producer = new Producer("producer-1", "my-queue");
+        var producer = new Producer("producer-1", "my-queue", false);
 
         await producer.SendMessageAsync("test-message-1");
 

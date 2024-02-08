@@ -9,8 +9,8 @@ public static class DurablePubSubExample
         consumer1.StartListening();
         consumer2.StartListening();
 
-        var producer1 = new Producer("producer-1", "my-topic");
-        var producer2 = new Producer("producer-2", "my-topic");
+        var producer1 = new Producer("producer-1", "my-topic", false);
+        var producer2 = new Producer("producer-2", "my-topic", false);
 
         await producer1.SendMessageAsync("test-message-1");
 
