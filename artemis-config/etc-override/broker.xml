@@ -255,13 +255,13 @@ under the License.
                <queue name="ExpiryQueue" />
             </anycast>
          </address>
-		<address name="my-queue">
+		   <address name="my-queue">
             <anycast>
-               <queue name="point-to-point" />
+               <queue name="my-queue" />
             </anycast>
-			<multicast>
-               <queue name="pub-sub" />
-            </multicast>
+         </address>
+         <address name="my-topic">
+			   <multicast />
          </address>
       </addresses>
 
